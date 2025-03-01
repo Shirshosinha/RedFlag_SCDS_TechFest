@@ -15,7 +15,7 @@ It is based on the **Red-Flag Extension** concept and improves upon it by integr
 - Works on embedded videos from various platforms.
 
 ### 🟡 Misinformation Detection
-- Uses **News API to ge the Top 5 article relating to the context ** to get the Top 5 articles realted to sentence used in the process of fact checking and then using Open 
+- Uses **News API to get the Top 5 article relating to the context** to get the Top 5 articles realted to sentence used in the process of fact checking and then using Open 
  AI for checking the informaytiom based on the articels   
 - Classifies claims into:
   - ✅ **TRUE** (supported by sources)
@@ -51,6 +51,7 @@ Edit
 ### 1️⃣ Clone the Repository
 ```bash
 git clone https://github.com/Pyder3/Syntax_Errors_DLW.git
+
 
 
 cd Syntax_Errors_DLW
