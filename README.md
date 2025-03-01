@@ -50,13 +50,23 @@ Edit
 ### 1️⃣ Clone the Repository
 ```bash
 git clone https://github.com/Pyder3/Syntax_Errors_DLW.git
+
+
 cd Syntax_Errors_DLW
+
+
 uvicorn src.backend.text_process.api:app --reload
+
+
+---
+
 4️⃣ Load the Extension in Browser
 Open Chrome and go to chrome://extensions/.
 Enable Developer Mode (top right corner).
 Click "Load Unpacked" and select the src/frontend folder.
 The Red-Flag extension should now be active!
+
+
 🔥 How It Works
 ✅ Misinformation Detection (Text Processing API)
 Extracts text from the webpage.
@@ -70,11 +80,15 @@ Displays results in the extension popup.
 Analyzes headline & body text for bias.
 Uses RoBERTa sentiment model to classify bias.
 Provides a confidence score inside the popup.
+
+
 🏗️ Tech Stack
 Frontend: HTML, CSS, JavaScript (Chrome Extension API)
 Backend: Python, FastAPI
 Machine Learning: Hugging Face (GenConViT, RoBERTa)
 APIs: Google's Fact Checker API
+
+
 🤝 Contributing
 Want to improve Red-Flag? Follow these steps:
 Fork the repository
@@ -82,6 +96,9 @@ Create a new branch (git checkout -b feature-name)
 Make your changes
 Commit and push (git commit -m "Added feature X" && git push origin feature-name)
 Submit a Pull Request (PR)
+
+
+
 📜 License
 This project is licensed under the MIT License.
 
