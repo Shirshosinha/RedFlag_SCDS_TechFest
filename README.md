@@ -63,7 +63,7 @@ uvicorn src.backend.text_process.api:app --reload
 
 
 
-4️⃣ **Load the Extension in Browser**
+**Load the Extension in Browser**
 Open Chrome and go to chrome://extensions/.
 Enable Developer Mode (top right corner).
 Click "Load Unpacked" and select the src/frontend folder.
@@ -77,7 +77,7 @@ Calls the Fact Checker API to verify claims.
 
 
 **Displays results inside the extension popup.**
-**🎥 Deepfake Detection (Video Processing API)
+🎥 Deepfake Detection (Video Processing API)
 Extracts video from a webpage.
 Uses GenConViT to check if the video is a deepfake.
 Displays results in the extension popup.
