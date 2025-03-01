@@ -15,8 +15,7 @@ It is based on the **Red-Flag Extension** concept and improves upon it by integr
 - Works on embedded videos from various platforms.
 
 ### 🟡 Misinformation Detection
-- Uses **News API to get the Top 5 article relating to the context** to get the Top 5 articles realted to sentence used in the process of fact checking and then using Open 
- AI for checking the informaytiom based on the articels   
+- **Uses Langchain with Open AI's Api and News API to get the Top 5 articles relating to the context of the input text** and  relays back the context into Open AI's API  for fact checking the information in the articles   
 - Classifies claims into:
   - ✅ **TRUE** (supported by sources)
   - ❌ **FALSE** (contradicted by sources)
@@ -65,15 +64,11 @@ uvicorn src.backend.text_process.api:app --reload
 
 
 
-### Loading Extension in Browser
-
-1.) Open Chrome and go to chrome://extensions/.
-
-2.) Enable Developer Mode (top right corner)
-
-3.) Click "Load Unpacked" and select the src/frontend folder.
-
-The **Red-Flag** extension should now be active!
+**Load the Extension in Browser**
+Open Chrome and go to chrome://extensions/.
+Enable Developer Mode (top right corner).
+Click "Load Unpacked" and select the src/frontend folder.
+The Red-Flag extension should now be active!
 
 
 ## 🚀 How It Works
