@@ -72,7 +72,7 @@ Click "Load Unpacked" and select the src/frontend folder.
 The Red-Flag extension should now be active!
 
 
-**How It Works**
+## 🚀 How It Works
 
 **Misinformation Detection** (Text Processing API)
 Extracts text from the webpage.
