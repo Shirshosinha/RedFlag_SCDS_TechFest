@@ -56,9 +56,8 @@ cd Syntax_Errors_DLW
 
 
 uvicorn src.backend.text_process.api:app --reload
+---bash 
 
-
----
 
 4️⃣ Load the Extension in Browser
 Open Chrome and go to chrome://extensions/.
