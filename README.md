@@ -3,7 +3,7 @@
 ## 🔥 Overview
 **Red-Flag** is a powerful browser extension designed to combat misinformation and ensure the integrity of online content. This extension employs advanced AI technologies to detect **deepfake videos**, **check facts in real-time**, and **analyze sentiment for bias detection**.
 
-It is based on the **Red-Flag Extension** concept and improves upon it by integrating the **GenConViT** model for deepfake detection, **Google's Fact Checker API** for misinformation verification, and **RoBERTa sentiment analysis** for bias detection.
+It is based on the **Red-Flag Extension** concept and improves upon it by integrating the **GenConViT** model for deepfake detection, **News Api and Open Ai's API** for misinformation verification, and **RoBERTa sentiment analysis** for bias detection.
 
 ---
 
