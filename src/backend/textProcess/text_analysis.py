@@ -10,12 +10,12 @@ from langchain_openai import ChatOpenAI
 
 # ==================== CONFIGURATIONS ====================
 
-NEWS_API_KEY = "a5285eeb839446489e6669bd52152d9c"  # ✅ Replace with your NewsAPI key
+NEWS_API_KEY = "<NEWS_API_KEY>"  # ✅ Replace with your NewsAPI key
 NEWS_API_URL = "https://newsapi.org/v2/everything"
 
 BIAS_THRESHOLD = 0.3  
 
-OPENAI_API_KEY = "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"  # ✅ Replace with your OpenAI key
+OPENAI_API_KEY = "<OPENAIAPI>"  # ✅ Replace with your OpenAI key
 openai_client = openai.OpenAI(api_key=OPENAI_API_KEY)  # ✅ Initialize OpenAI Client
 
 # Initialize GPT-4 via LangChain
