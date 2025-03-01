@@ -32,8 +32,23 @@ It is based on the **Red-Flag Extension** concept and improves upon it by integr
 
 ## 📁 Project Structure
 
-Syntax_Errors_DLW/ │── src/ │ ├── backend/ │ │ ├── text_process/ # Misinformation & Bias Detection │ │ │ ├── api.py # FastAPI server │ │ │ ├── text_analysis.py # Text classification logic │ │ ├── video_process/ # Deepfake Detection │ │ │ ├── GenConViT/ # Model implementation │ │ │ ├── videoEndpoints.py # API endpoints for video analysis │ ├── frontend/ │ │ ├── images/ # Extension icons and assets │ │ ├── content.css # Styles for the extension │ │ ├── content.js # Script to interact with web pages │ │ ├── popup.html # UI for the extension popup │ │ ├── popup.js # Controls popup behavior │ │ ├── manifest.json # Browser extension manifest
----
+Syntax_Errors_DLW/
+│── src/
+│   ├── backend/
+│   │   ├── text_process/  # Misinformation & Bias Detection
+│   │   │   ├── api.py  # FastAPI server
+│   │   │   ├── text_analysis.py  # Text classification logic
+│   │   ├── video_process/  # Deepfake Detection
+│   │   │   ├── GenConViT/  # Model implementation
+│   │   │   ├── videoEndpoints.py  # API endpoints for video analysis
+│   ├── frontend/
+│   │   ├── images/  # Extension icons and assets
+│   │   ├── content.css  # Styles for the extension
+│   │   ├── content.js  # Script to interact with web pages
+│   │   ├── popup.html  # UI for the extension popup
+│   │   ├── popup.js  # Controls popup behavior
+│   │   ├── manifest.json  # Browser extension manifest
+
 
 
 
