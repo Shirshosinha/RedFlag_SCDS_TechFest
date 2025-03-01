@@ -1,9 +1,8 @@
-/* Updated content.css */
-.opinion-highlight {
+/* .opinion-highlight {
   border-radius: 2px;
   padding: 0 2px;
   position: relative;
-  background-color: rgba(255, 221, 158, 0.7); /* Default color if no score */
+  background-color: rgba(255, 221, 158, 0.7);
   transition: background-color 0.2s;
 }
 
@@ -34,7 +33,6 @@
   opacity: 1;
 }
 
-/* Updated CSS for deepfake warnings */
 .deepfake-video-container {
   position: relative;
   display: inline-block;
@@ -51,13 +49,12 @@
   padding: 8px;
   font-weight: bold;
   font-size: 14px;
-  z-index: 10000; /* Very high z-index to ensure visibility */
-  pointer-events: none; /* Allow clicks to pass through to the video */
+  z-index: 10000;
+  pointer-events: none;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   border-bottom: 1px solid white;
 }
 
-/* Animation to ensure attention */
 @keyframes warningPulse {
   0% { background-color: rgba(255, 0, 0, 0.8); }
   50% { background-color: rgba(255, 60, 60, 0.9); }
@@ -68,8 +65,104 @@
   animation: warningPulse 2s infinite;
 }
 
-/* Add styles for videos that have been flagged */
 video[data-deepfake-flagged="true"] {
   outline: 3px solid red;
   outline-offset: -3px;
+} */
+
+
+/* Improved styles for content highlighting and tooltips */
+
+/* Bias highlight styles */
+.opinion-highlight {
+  border-radius: 2px;
+  padding: 0 2px;
+  position: relative;
+  background-color: rgba(255, 221, 158, 0.7); /* Default color */
+  transition: background-color 0.2s, box-shadow 0.2s;
+  cursor: help;
+}
+
+.opinion-highlight:hover {
+  box-shadow: 0 0 0 1px #FFA726;
+  text-decoration: none;
+}
+
+/* Misinformation highlight styles */
+.misinfo-highlight {
+  border-radius: 2px;
+  padding: 0 2px;
+  position: relative;
+  background-color: rgba(255, 0, 0, 0.3);
+  transition: background-color 0.2s, box-shadow 0.2s;
+  cursor: help;
+}
+
+.misinfo-highlight:hover {
+  box-shadow: 0 0 0 1px #F44336;
+  text-decoration: none;
+}
+
+/* Improved deepfake warning styles */
+.deepfake-video-container {
+  position: relative;
+  display: inline-block;
+}
+
+.deepfake-warning {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(183, 28, 28, 0.9);
+  color: white;
+  text-align: center;
+  padding: 10px;
+  font-weight: bold;
+  font-size: 14px;
+  z-index: 10000;
+  pointer-events: none;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.deepfake-warning::before {
+  content: "⚠️";
+  display: inline-block;
+  margin-right: 8px;
+  font-size: 16px;
+}
+
+/* Updated animation for warning banners */
+@keyframes warningPulse {
+  0% { background-color: rgba(183, 28, 28, 0.9); }
+  50% { background-color: rgba(211, 47, 47, 0.95); }
+  100% { background-color: rgba(183, 28, 28, 0.9); }
+}
+
+.deepfake-warning {
+  animation: warningPulse 2s infinite;
+}
+
+/* Flagged video styles */
+video[data-deepfake-flagged="true"] {
+  outline: 3px solid #B71C1C;
+  outline-offset: -3px;
+  box-shadow: 0 0 8px rgba(183, 28, 28, 0.6);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .tooltip-container {
+    max-width: 260px;
+    font-size: 13px;
+  }
+  
+  .deepfake-warning {
+    font-size: 12px;
+    padding: 6px;
+  }
 }

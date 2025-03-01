@@ -86,7 +86,7 @@ async def predict_video_blob(file: UploadFile = File(...)):
                     f"Prediction: {pred[1]} {real_or_fake(pred[0])}"
                 )
         os.remove(input_path)
-        # os.remove(output_path)
+        os.remove(output_path)
         return {"result": real_or_fake(pred[0]) if pred[1] != 0.5 else "UNDETERMINED", "accuracy": abs(pred[1] - 0.5)}
     else:
         return {"error": "Invalid video file"}
