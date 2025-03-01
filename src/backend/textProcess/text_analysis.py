@@ -7,7 +7,7 @@ from sentence_transformers import SentenceTransformer, util
 
 # ==================== CONFIGURATIONS ====================
 
-FACT_CHECK_API_KEY = "AIzaSyBYTcQ0VgVEIOv8Pzw4f9476CPdWsL19Ug"  # <-- Replace this
+FACT_CHECK_API_KEY = "AIzaSyBYTcQ0VgVEIOv8Pzw4f9476CPdWsL19Ug"  # Replace with a valid API key
 FACT_CHECK_API_URL = f"https://factchecktools.googleapis.com/v1alpha1/claims:search?key={FACT_CHECK_API_KEY}"
 
 # Lowered similarity threshold for better misinformation detection
@@ -85,36 +85,32 @@ def detect_bias(sentence: str, threshold: float = BIAS_THRESHOLD) -> dict:
 
     return {}
 
-def fact_check_claim(sentence: str) -> str:
+def fact_check_claim(sentence: str) -> dict:
     """Query the Fact-Check API and return the closest matching misinformation claim."""
     cleaned_sentence = preprocess_text(sentence)
     if len(cleaned_sentence) < 3:
-        return "Unknown"
+        return {"Fact-Check Result": "Unknown", "Explanation": "Sentence is too short for analysis"}
 
-    response = requests.get(f"{FACT_CHECK_API_URL}&query={cleaned_sentence}")
-    data = response.json()
-    
-    # Log the entire API response for debugging
+    try:
+        response = requests.get(f"{FACT_CHECK_API_URL}&query={cleaned_sentence}")
+        data = response.json()
+    except requests.RequestException as e:
+        logging.error(f"Error querying Fact-Check API: {e}")
+        return {"Fact-Check Result": "API Error", "Explanation": "Could not reach the Fact-Check API"}
+
     logging.debug(f"API Response: {data}")
 
     if "claims" not in data or not data["claims"]:
-        return "No relevant fact-check found"
+        return {"Fact-Check Result": "No Match", "Explanation": "No relevant fact-check found"}
 
-    best_match = None
-    highest_score = 0
     found_ratings = []
-
+    
     for claim in data["claims"]:
         claim_text = claim.get("text", "").lower()
         similarity = compute_similarity(cleaned_sentence, claim_text)
-        logging.debug(f"Similarity: '{cleaned_sentence}' <-> '{claim_text}' => {similarity:.2f}")
-
-        if similarity > highest_score:
-            highest_score = similarity
-            best_match = claim
 
         if similarity < SIMILARITY_THRESHOLD:
-            continue
+            continue  # Ignore low-similarity claims
 
         for review in claim.get("claimReview", []):
             rating = review.get("textualRating", "Unknown")
@@ -122,27 +118,34 @@ def fact_check_claim(sentence: str) -> str:
             url = review.get("url", "#")
 
             found_ratings.append((claim_text, rating, similarity, source, url))
-            logging.debug(f"Fact-Check Match: '{claim_text}' => Rating: {rating} (Source: {source})")
 
     if not found_ratings:
-        return "No strong misinformation matches found"
+        return {"Fact-Check Result": "No strong misinformation matches found"}
 
-    # Sort by highest similarity score
+    # Sort by highest similarity
     found_ratings.sort(key=lambda x: x[2], reverse=True)
 
-    best_claim_text, best_rating, best_score, best_source, best_url = found_ratings[0]
-    return {
-        "Fact-Check Result": best_rating,
-        "Source": best_source,
-        "URL": best_url
-    }
+    best_matches = [
+        {
+            "Claim": claim_text,
+            "Fact-Check Result": rating,
+            "Source": source,
+            "URL": url,
+            "Similarity": f"{similarity:.2f}"
+        }
+        for claim_text, rating, similarity, source, url in found_ratings[:3]  # Return top 3 matches
+    ]
+
+    return {"Fact-Check Matches": best_matches}
 
 def segment_sentences(text: str) -> list:
-    """Use spaCy to split text into meaningful sentences."""
-    if nlp:
-        return [sent.text.strip() for sent in nlp(text).sents if len(sent.text.strip()) > 3]
-    else:
-        return text.split(".")  # Fallback if spaCy is unavailable
+    """Use spaCy to split text into meaningful sentence chunks."""
+    if not nlp:
+        return [sent.strip() for sent in text.split(".") if sent.strip()]  # Basic fallback
+    
+    sentences = [sent.text.strip() for sent in nlp(text).sents if len(sent.text.strip()) > 3]
+
+    return sentences  # Each sentence is now analyzed separately
 
 def analyze_text(raw_text: str) -> dict:
     """Analyze text for bias and misinformation."""
@@ -160,7 +163,7 @@ def analyze_text(raw_text: str) -> dict:
 
         # Misinformation Detection
         misinformation_result = fact_check_claim(sentence)
-        if isinstance(misinformation_result, dict) and "Fact-Check Result" in misinformation_result:
+        if isinstance(misinformation_result, dict) and "Fact-Check Matches" in misinformation_result:
             misinformation_results[sentence] = misinformation_result
             logging.info(f"[MISINFO] '{sentence}' => {misinformation_result}")
         else:
@@ -175,13 +178,9 @@ def analyze_text(raw_text: str) -> dict:
 
 if __name__ == "__main__":
     test_paragraph = """
-            Recent studies suggest that Covid vaccines are completely unsafe and have caused severe side effects in most individuals. 
-            Despite this, the mainstream media refuses to report the truth, as big pharma companies have paid millions to silence journalists. 
-            Additionally, many independent researchers have found that 5G radiation weakens the immune system and is being used for mass surveillance. 
-            Meanwhile, government officials have quietly admitted that the Earth is actually flat, but they keep this information hidden from the public.
+            Covid causes autism. Earth is plain flat.
             """
 
     logging.info(f"Analyzing paragraph: {test_paragraph}")
     results = analyze_text(test_paragraph)
     logging.info(f"Final results: {results}")
-
