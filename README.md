@@ -32,6 +32,8 @@ It is based on the **Red-Flag Extension** concept and improves upon it by integr
 
 ## 📁 Project Structure
 
+```bash
+
 Syntax_Errors_DLW/
 │── src/
 │   ├── backend/
