@@ -73,13 +73,13 @@ The Red-Flag extension should now be active!
 
 
 **How It Works**
-✅ Misinformation Detection (Text Processing API)
+
+**Misinformation Detection** (Text Processing API)
 Extracts text from the webpage.
 Calls the Fact Checker API to verify claims.
 
 
-**Displays results inside the extension popup.**
-🎥 Deepfake Detection (Video Processing API)
+**Deepfake Detection** (Video Processing API)
 Extracts video from a webpage.
 Uses GenConViT to check if the video is a deepfake.
 Displays results in the extension popup.
