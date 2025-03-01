@@ -84,29 +84,16 @@ Provides a confidence score inside the popup.
 🏗️ Tech Stack
 Frontend: HTML, CSS, JavaScript (Chrome Extension API)
 Backend: Python, FastAPI
-Machine Learning: Hugging Face (GenConViT, RoBERTa)
-APIs: Google's Fact Checker API
-
-
-🤝 Contributing
-Want to improve Red-Flag? Follow these steps:
-Fork the repository
-Create a new branch (git checkout -b feature-name)
-Make your changes
-Commit and push (git commit -m "Added feature X" && git push origin feature-name)
-Submit a Pull Request (PR)
+Machine Learning: Hugging Face (GenConViT, RoBERTa), Langchain
+APIs: News API, Open AI
 
 
 
-📜 License
-This project is licensed under the MIT License.
+
+
 
 📬 Contact
 For questions or suggestions, open an issue on GitHub:
 🔗 GitHub Repository
 
-pgsql
-Copy
-Edit
 
-This is already formatted as markdown (`README.md` file). You can simply **copy and paste** it int
