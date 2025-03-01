@@ -94,6 +94,9 @@ Provides a confidence score inside the popup.
 
 ## 🚀 Tech Stack
 **FrontEnd :** HTML, CSS, JavaScript
+
 **Backend :** Python, Fast API
+
 **AI/Machine Learning:** GenConVit, Roberta, LangChain
+
 **API :** News API, Open AI 
