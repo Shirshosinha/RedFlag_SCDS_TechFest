@@ -4,3 +4,5 @@
 # Ignore video files
 *.mp4
 *.webm
+
+src/backend/textProcess/kaustav_rnv
