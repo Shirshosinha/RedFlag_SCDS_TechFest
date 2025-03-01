@@ -15,7 +15,8 @@ It is based on the **Red-Flag Extension** concept and improves upon it by integr
 - Works on embedded videos from various platforms.
 
 ### 🟡 Misinformation Detection
-- Uses **Google's Fact Checker API** to verify the **authenticity of news and articles**.
+- Uses **News API to ge the Top 5 article relating to the context ** to get the Top 5 articles realted to sentence used in the process of fact checking and then using Open 
+ AI for checking the informaytiom based on the articels   
 - Classifies claims into:
   - ✅ **TRUE** (supported by sources)
   - ❌ **FALSE** (contradicted by sources)
