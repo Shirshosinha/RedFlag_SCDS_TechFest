@@ -91,3 +91,9 @@ Displays results in the extension popup.
 Analyzes headline & body text for bias.
 Uses RoBERTa sentiment model to classify bias.
 Provides a confidence score inside the popup.
+
+## 🚀 Tech Stack
+**FrontEnd :** HTML, CSS, JavaScript
+**Backend :** Python, Fast API
+**AI/Machine Learning:** GenConVit, Roberta, LangChain
+**API :** News API, Open AI 
