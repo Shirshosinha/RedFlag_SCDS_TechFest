@@ -1,0 +1,6 @@
+# Ignore model weight files
+*.pth
+
+# Ignore video files
+*.mp4
+*.webm
