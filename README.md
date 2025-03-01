@@ -32,34 +32,18 @@ It is based on the **Red-Flag Extension** concept and improves upon it by integr
 
 ## 📁 Project Structure
 
-Syntax_Errors_DLW/ │── src/ │ ├── backend/ │ │ ├── text_process/ # Misinformation & Bias Detection │ │ │ ├── api.py # FastAPI server │ │ │ ├── text_analysis.py # Text classification logic │ │ ├── video_process/ # Deepfake Detection │ │ │ ├── GenConViT/ # Model implementation │ │ │ ├── videoEndpoints.py # API endpoints for video analysis │ ├── frontend/
-│ │ ├── images/ # Extension icons and assets
-│ │ ├── content.css # Styles for the extension
-│ │ ├── content.js # Script to interact with web pages
-│ │ ├── popup.html # UI for the extension popup
-│ │ ├── popup.js # Controls popup behavior
-│ │ ├── manifest.json # Browser extension manifest
-
-yaml
-Copy
-Edit
-
+Syntax_Errors_DLW/ │── src/ │ ├── backend/ │ │ ├── text_process/ # Misinformation & Bias Detection │ │ │ ├── api.py # FastAPI server │ │ │ ├── text_analysis.py # Text classification logic │ │ ├── video_process/ # Deepfake Detection │ │ │ ├── GenConViT/ # Model implementation │ │ │ ├── videoEndpoints.py # API endpoints for video analysis │ ├── frontend/ │ │ ├── images/ # Extension icons and assets │ │ ├── content.css # Styles for the extension │ │ ├── content.js # Script to interact with web pages │ │ ├── popup.html # UI for the extension popup │ │ ├── popup.js # Controls popup behavior │ │ ├── manifest.json # Browser extension manifest
 ---
 
-## 🛠️ Installation
 
-### 1️⃣ Clone the Repository
-```bash
+
+## 🚀 Installation
+
 git clone https://github.com/Pyder3/Syntax_Errors_DLW.git
-
-
 
 cd Syntax_Errors_DLW
 
-
 uvicorn src.backend.text_process.api:app --reload
----bash 
-
 
 4️⃣ Load the Extension in Browser
 Open Chrome and go to chrome://extensions/.
@@ -72,30 +56,16 @@ The Red-Flag extension should now be active!
 ✅ Misinformation Detection (Text Processing API)
 Extracts text from the webpage.
 Calls the Fact Checker API to verify claims.
+
+
 Displays results inside the extension popup.
 🎥 Deepfake Detection (Video Processing API)
 Extracts video from a webpage.
 Uses GenConViT to check if the video is a deepfake.
 Displays results in the extension popup.
+
+
 📊 Bias Detection (Sentiment Analysis)
 Analyzes headline & body text for bias.
 Uses RoBERTa sentiment model to classify bias.
 Provides a confidence score inside the popup.
-
-
-🏗️ Tech Stack
-Frontend: HTML, CSS, JavaScript (Chrome Extension API)
-Backend: Python, FastAPI
-Machine Learning: Hugging Face (GenConViT, RoBERTa), Langchain
-APIs: News API, Open AI
-
-
-
-
-
-
-📬 Contact
-For questions or suggestions, open an issue on GitHub:
-🔗 GitHub Repository
-
-
