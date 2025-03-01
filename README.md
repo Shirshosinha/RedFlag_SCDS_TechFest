@@ -70,7 +70,7 @@ Click "Load Unpacked" and select the src/frontend folder.
 The Red-Flag extension should now be active!
 
 
-**🔥 How It Works**
+**How It Works**
 ✅ Misinformation Detection (Text Processing API)
 Extracts text from the webpage.
 Calls the Fact Checker API to verify claims.
@@ -83,7 +83,7 @@ Uses GenConViT to check if the video is a deepfake.
 Displays results in the extension popup.
 
 
-**📊 Bias Detection (Sentiment Analysis)**
+**Bias Detection (Sentiment Analysis)**
 Analyzes headline & body text for bias.
 Uses RoBERTa sentiment model to classify bias.
 Provides a confidence score inside the popup.
