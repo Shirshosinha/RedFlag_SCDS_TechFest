@@ -41,31 +41,31 @@ Syntax_Errors_DLW/ │── src/ │ ├── backend/ │ │ ├── text_
 
 git clone https://github.com/Pyder3/Syntax_Errors_DLW.git
 
-cd Syntax_Errors_DLW
-
 uvicorn src.backend.text_process.api:app --reload
 
-4️⃣ Load the Extension in Browser
+
+
+4️⃣ **Load the Extension in Browser**
 Open Chrome and go to chrome://extensions/.
 Enable Developer Mode (top right corner).
 Click "Load Unpacked" and select the src/frontend folder.
 The Red-Flag extension should now be active!
 
 
-🔥 How It Works
+**🔥 How It Works**
 ✅ Misinformation Detection (Text Processing API)
 Extracts text from the webpage.
 Calls the Fact Checker API to verify claims.
 
 
-Displays results inside the extension popup.
-🎥 Deepfake Detection (Video Processing API)
+**Displays results inside the extension popup.**
+**🎥 Deepfake Detection (Video Processing API)
 Extracts video from a webpage.
 Uses GenConViT to check if the video is a deepfake.
 Displays results in the extension popup.
 
 
-📊 Bias Detection (Sentiment Analysis)
+**📊 Bias Detection (Sentiment Analysis)**
 Analyzes headline & body text for bias.
 Uses RoBERTa sentiment model to classify bias.
 Provides a confidence score inside the popup.
