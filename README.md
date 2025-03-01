@@ -51,8 +51,7 @@ Syntax_Errors_DLW/
 │   │   ├── popup.js  # Controls popup behavior
 │   │   ├── manifest.json  # Browser extension manifest
 
-```bash
-
+'''
 
 
 
