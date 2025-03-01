@@ -43,6 +43,8 @@ Syntax_Errors_DLW/
 │   │   ├── video_process/  # Deepfake Detection
 │   │   │   ├── GenConViT/  # Model implementation
 │   │   │   ├── videoEndpoints.py  # API endpoints for video analysis
+|   |   |   |── main.py
+|   |   |   |── get_weights.ssh
 │   ├── frontend/
 │   │   ├── images/  # Extension icons and assets
 │   │   ├── content.css  # Styles for the extension
