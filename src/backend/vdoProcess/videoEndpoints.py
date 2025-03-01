@@ -8,6 +8,8 @@ import shutil
 import subprocess
 import os
 from moviepy import VideoFileClip
+import uuid
+import math
 
 config = load_config()
 
@@ -34,8 +36,10 @@ def convert_video(input_path, output_path):
         'ffmpeg',
         '-i', input_path,
         '-c:v', 'libx264',
+        '-preset', 'slow',   # better quality at the cost of encoding time
+        '-crf', '18',        # lower CRF means higher quality (range is 0-51)
         '-c:a', 'aac',
-        '-strict', 'experimental',
+        '-b:a', '192k',      # ensure decent audio quality
         output_path
     ]
     subprocess.run(command, check=True)
@@ -67,8 +71,9 @@ def predict_video(video: VideoURI):
 @app.post("/api/video_predict")
 async def predict_video_blob(file: UploadFile = File(...)):
     video_bytes = await file.read()
-    input_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),"tmp/temp_video.webm")
-    output_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),"tmp/converted_video.mp4")
+    unique_id = uuid.uuid4()
+    input_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),f"tmp/temp_video_{unique_id}.webm")
+    output_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),f"tmp/converted_video_{unique_id}.mp4")
     with open(input_path, "wb") as f:
         f.write(video_bytes)
     # convert_webm_to_mp4(input_path, output_path)
@@ -76,13 +81,13 @@ async def predict_video_blob(file: UploadFile = File(...)):
     if is_video(output_path):
         result = set_result()
         print("Predicting...")
-        result, accuracy, count, pred = predict(output_path, model, False, result, 15, net, "uncategorized", 0)
+        result, accuracy, count, pred = predict(output_path, model, False, result, 25, net, "uncategorized", 0)
         print(
                     f"Prediction: {pred[1]} {real_or_fake(pred[0])}"
                 )
         os.remove(input_path)
-        os.remove(output_path)
-        return {"result": real_or_fake(pred[0]), "accuracy": accuracy}
+        # os.remove(output_path)
+        return {"result": real_or_fake(pred[0]) if pred[1] != 0.5 else "UNDETERMINED", "accuracy": abs(pred[1] - 0.5)}
     else:
         return {"error": "Invalid video file"}
     
