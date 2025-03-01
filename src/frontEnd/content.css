@@ -1,0 +1,75 @@
+/* Updated content.css */
+.opinion-highlight {
+  border-radius: 2px;
+  padding: 0 2px;
+  position: relative;
+  background-color: rgba(255, 221, 158, 0.7); /* Default color if no score */
+  transition: background-color 0.2s;
+}
+
+.opinion-highlight:hover {
+  text-decoration: underline;
+}
+
+.opinion-highlight::after {
+  content: attr(data-opinion-score);
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s, visibility 0.2s;
+  z-index: 1001;
+}
+
+.opinion-highlight:hover::after {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Updated CSS for deepfake warnings */
+.deepfake-video-container {
+  position: relative;
+  display: inline-block;
+}
+
+.deepfake-warning {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(255, 0, 0, 0.8);
+  color: white;
+  text-align: center;
+  padding: 8px;
+  font-weight: bold;
+  font-size: 14px;
+  z-index: 10000; /* Very high z-index to ensure visibility */
+  pointer-events: none; /* Allow clicks to pass through to the video */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  border-bottom: 1px solid white;
+}
+
+/* Animation to ensure attention */
+@keyframes warningPulse {
+  0% { background-color: rgba(255, 0, 0, 0.8); }
+  50% { background-color: rgba(255, 60, 60, 0.9); }
+  100% { background-color: rgba(255, 0, 0, 0.8); }
+}
+
+.deepfake-warning {
+  animation: warningPulse 2s infinite;
+}
+
+/* Add styles for videos that have been flagged */
+video[data-deepfake-flagged="true"] {
+  outline: 3px solid red;
+  outline-offset: -3px;
+}
