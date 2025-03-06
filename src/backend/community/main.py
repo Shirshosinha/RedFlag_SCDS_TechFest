@@ -8,8 +8,8 @@ import random
 
 conn = snowflake.connector.connect(
     user="raghavg332",
-    password="Qa29Kh4MptfGHEW",
-    account="KXCIVVH-LL27432",
+    password= PASSWORD,
+    account=ACCOUNT,
     warehouse="COMPUTE_WH",
     database="COMMUNITYNOTESDB",
     schema="PUBLIC"
@@ -72,57 +72,6 @@ async def get_comments(website_url: str = Query(..., title="Website URL")):
     
     return JSONResponse(content={"comments": comment_data})
 
-# @app.get("/get_comment_stats")
-# async def get_comment_stats():
-#     # Execute sentiment analysis query
-#     cur.execute('''WITH sentiment_analysis AS (
-#         SELECT 
-#             comment_text,
-#             SNOWFLAKE.CORTEX.CLASSIFY_TEXT(
-#                 comment_text, 
-#                 ['positive', 'negative', 'neutral'],
-#                 {
-#                     'task_description': 'Determine the overall sentiment of the given comment as positive, negative, or neutral.'
-#                 }
-#             )['label'] AS sentiment
-#         FROM comments
-#     )
-#     SELECT 
-#         sentiment,
-#         COUNT(*) AS count,
-#         COUNT(*) * 100.0 / SUM(COUNT(*)) OVER () AS percentage
-#     FROM sentiment_analysis
-#     GROUP BY sentiment;''')
-
-#     sentiment_results = cur.fetchall()  # Fetch sentiment analysis results
-
-#     # Execute summarization query
-#     cur.execute('''SELECT SNOWFLAKE.CORTEX.COMPLETE(
-#         'mistral-large',
-#         CONCAT('Summarize the following user comments to provide users a small overview of what others think: ', 
-#             LISTAGG(comment_text, ' ') WITHIN GROUP (ORDER BY comment_text)
-#         )
-#     ) AS comment_summary
-#     FROM comments;''')
-
-#     summary_result = cur.fetchone()  # Fetch summary (single result expected)
-
-#     # Convert Decimal to float for JSON serialization
-#     sentiment_data = [
-#         {
-#             "sentiment": row[0],
-#             "percentage": float(row[2])  # Convert Decimal to float
-#         }
-#         for row in sentiment_results
-#     ]
-
-#     summary_text = summary_result[0] if summary_result else "No comments available for summarization."
-
-#     # Return JSON response
-#     return JSONResponse(content={
-#         "sentiment_stats": sentiment_data,
-#         "comment_summary": summary_text
-#     })
 @app.get("/get_comment_stats")
 async def get_comment_stats(website_url: str = Query(..., title="Website URL")):
     try:
