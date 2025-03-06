@@ -1,0 +1,343 @@
+<!-- community.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      width: 100%;
+      height: 100%;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      padding: 20px;
+      color: #333;
+      background-color: #f5f7fa;
+      line-height: 1.5;
+    }
+    
+    .title {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 24px;
+      text-align: center;
+      color: #2563eb;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #e2e8f0;
+      letter-spacing: -0.01em;
+    }
+    
+    .card {
+      margin-bottom: 24px;
+      background-color: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      border: 1px solid #e2e8f0;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .card:hover {
+      box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+    }
+    
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: #2563eb;
+      display: flex;
+      align-items: center;
+    }
+    
+    .section-title::before {
+      content: "";
+      width: 4px;
+      height: 16px;
+      background-color: #2563eb;
+      margin-right: 8px;
+      border-radius: 2px;
+      display: inline-block;
+    }
+    
+    .input-group {
+      margin-bottom: 16px;
+    }
+    
+    .input-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #4b5563;
+    }
+    
+    .comment-input {
+      width: 100%;
+      min-height: 90px;
+      padding: 12px 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      resize: vertical;
+      font-family: inherit;
+      box-sizing: border-box;
+      transition: all 0.2s;
+      font-size: 14px;
+      line-height: 1.5;
+      background-color: #f9fafb;
+    }
+    
+    .comment-input:focus,
+    .source-input:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+      background-color: white;
+    }
+    
+    .source-input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      box-sizing: border-box;
+      transition: all 0.2s;
+      font-size: 14px;
+      background-color: #f9fafb;
+    }
+    
+    .submit-btn {
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      float: right;
+      transition: all 0.2s;
+      font-size: 14px;
+      letter-spacing: 0.01em;
+      box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+    }
+    
+    .submit-btn:hover {
+      background-color: #1d4ed8;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(37, 99, 235, 0.3);
+    }
+    
+    .submit-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 1px 2px rgba(37, 99, 235, 0.2);
+    }
+    
+    .submit-btn:disabled {
+      background-color: #bfdbfe;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    
+    .sentiment-meter {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    
+    .meter-canvas-container {
+      width: 120px;
+      height: 120px;
+      position: relative;
+    }
+    
+    .meter-canvas {
+      width: 100%;
+      height: 100%;
+    }
+    
+    .sentiment-stats {
+      flex: 1;
+      padding-left: 20px;
+    }
+    
+    .stat-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+    
+    .stat-color {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+    
+    .stat-positive {
+      background-color: #22c55e;
+    }
+    
+    .stat-neutral {
+      background-color: #f59e0b;
+    }
+    
+    .stat-negative {
+      background-color: #ef4444;
+    }
+    
+    #comment-summary {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #4b5563;
+      padding: 6px 0;
+    }
+    
+    .comments-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    
+    .comment-count {
+      background-color: #dbeafe;
+      border-radius: 16px;
+      padding: 3px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #2563eb;
+    }
+    
+    .comment-item {
+      padding: 14px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      margin-bottom: 14px;
+      background-color: #f9fafb;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .comment-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+      border-color: #d1d5db;
+    }
+    
+    .comment-text {
+      margin-bottom: 10px;
+      line-height: 1.5;
+      font-size: 14px;
+      color: #374151;
+    }
+    
+    .comment-source {
+      font-size: 12px;
+      color: #2563eb;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 6px;
+      transition: all 0.2s;
+      font-weight: 500;
+    }
+    
+    .comment-source:hover {
+      color: #1d4ed8;
+      text-decoration: underline;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 30px 20px;
+      color: #6b7280;
+      font-style: italic;
+      font-size: 14px;
+      background-color: #f8fafc;
+      border-radius: 8px;
+      border: 1px dashed #cbd5e1;
+    }
+    
+    .loader {
+      border: 3px solid #e5e7eb;
+      border-top: 3px solid #2563eb;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+      display: none;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    @media (max-width: 400px) {
+      body {
+        padding: 15px;
+        width: 100%;
+      }
+      
+      .card {
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="title">Community Insights</div>
+  
+  <div class="card">
+    <div class="section-title">Share Your Thoughts</div>
+    <div class="input-group">
+      <label class="input-label" for="comment-input">Your comment:</label>
+      <textarea id="comment-input" class="comment-input" placeholder="What do you think about this article?"></textarea>
+    </div>
+    <div class="input-group">
+      <label class="input-label" for="source-input">Supporting source (optional):</label>
+      <input type="text" id="source-input" class="source-input" placeholder="https://example.com">
+    </div>
+    <button id="submit-comment" class="submit-btn">Submit</button>
+    <div style="clear: both;"></div>
+  </div>
+  
+  <div class="card">
+    <div class="section-title">Community Sentiment</div>
+    <div class="sentiment-meter" id="sentiment-container">
+      <div class="meter-canvas-container">
+        <canvas id="sentiment-meter" class="meter-canvas"></canvas>
+      </div>
+      <div class="sentiment-stats" id="sentiment-stats">
+        <!-- Will be populated with JS -->
+      </div>
+    </div>
+  </div>
+  
+  <div class="card" id="summary-section">
+    <div class="section-title">Community Summary</div>
+    <div id="comment-summary">Loading summary...</div>
+  </div>
+  
+  <div class="card">
+    <div class="comments-header">
+      <div class="section-title" style="margin-bottom: 0;">Recent Comments</div>
+      <div class="comment-count" id="comment-count">0</div>
+    </div>
+    
+    <div id="comments-container">
+      <div class="loader" id="comments-loader"></div>
+      <div class="empty-state" id="empty-state">No comments yet. Be the first to share your thoughts!</div>
+    </div>
+  </div>
+  
+  <script src="community.js"></script>
+</body>
+</html>
