@@ -5,8 +5,6 @@ import logging
 import openai
 import urllib.parse
 from transformers import pipeline
-from sentence_transformers import SentenceTransformer, util
-from langchain_openai import ChatOpenAI
 from bs4 import BeautifulSoup
 
 # ==================== CONFIGURATIONS ====================
@@ -15,7 +13,7 @@ from bs4 import BeautifulSoup
 BIAS_THRESHOLD = 0.3  
 
 
-GROQ_API_KEY = "GROQ-API-KEY"  #
+GROQ_API_KEY = "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"
 GROQ_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions"
 
 # Load NLP Model
@@ -117,8 +115,6 @@ def detect_bias(sentence: str, threshold: float = BIAS_THRESHOLD) -> dict:
 
 import requests
 import logging
-from sentence_transformers import SentenceTransformer, util
-
 # ✅ Load sentence similarity model
 def fetch_article_content(url: str) -> dict:
     """Scrape and extract main article title and first 500 words from a given URL."""
