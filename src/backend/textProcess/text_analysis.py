@@ -112,7 +112,6 @@ def detect_bias(sentence: str, threshold: float = BIAS_THRESHOLD) -> dict:
         return {sentence: round(neg_score, 2)}
 
     return {}
-
 import requests
 import logging
 # ✅ Load sentence similarity model
@@ -306,4 +305,3 @@ def analyze_text(raw_text: str, current_page_url: str) -> dict:
         "biased_sentences": bias_results,  # ✅ Bias detection per sentence
         "misinformation_sentences": misinformation_results  # ✅ Misinformation detection per paragraph
     }
-
