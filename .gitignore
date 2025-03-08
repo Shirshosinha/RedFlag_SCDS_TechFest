@@ -6,3 +6,9 @@
 *.webm
 
 src/backend/textProcess/kaustav_rnv
+.venv
+# Ignore all Python cache files in any folder or subfolder
+__pycache__/
+*.pyc
+*.pyo
+*.pyd

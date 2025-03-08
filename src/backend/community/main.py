@@ -8,13 +8,14 @@ import random
 
 conn = snowflake.connector.connect(
     user="raghavg332",
-    password= PASSWORD,
-    account=ACCOUNT,
+    password="Qa29Kh4MptfGHEW",
+    account="KXCIVVH-LL27432",
     warehouse="COMPUTE_WH",
     database="COMMUNITYNOTESDB",
     schema="PUBLIC"
     )
 cur = conn.cursor()
+#Port 8002
 app = FastAPI()
 # Add CORS middleware
 app.add_middleware(
@@ -137,3 +138,7 @@ async def get_comment_stats(website_url: str = Query(..., title="Website URL")):
 
     except Exception as e:
         return JSONResponse(content={"error": str(e)}, status_code=500)
+    
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8002)

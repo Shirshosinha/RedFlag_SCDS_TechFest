@@ -7,7 +7,7 @@ import requests
 import shutil
 import subprocess
 import os
-from moviepy import VideoFileClip
+# from moviepy import VideoFileClip
 import uuid
 import math
 
@@ -20,10 +20,10 @@ app = FastAPI()
 net = "gencovit"
 model = load_genconvit(config, net, "genconvit_ed_inference", "genconvit_vae_inference", False)
 
-def convert_webm_to_mp4(input_path, output_path):
-    clip = VideoFileClip(input_path)
-    clip.write_videofile(output_path, codec="libx264", audio_codec="aac")
-    clip.close()
+# def convert_webm_to_mp4(input_path, output_path):
+#     clip = VideoFileClip(input_path)
+#     clip.write_videofile(output_path, codec="libx264", audio_codec="aac")
+#     clip.close()
 
 def download_video(url, save_path):
     response = requests.get(url, stream=True)

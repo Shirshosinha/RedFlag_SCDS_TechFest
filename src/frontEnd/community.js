@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function() {
     submitButton.textContent = 'Submitting...';
     
     // Add comment to the backend
-    fetch('http://127.0.0.1:8000/add_comment', {
+    fetch('http://127.0.0.1:8002/add_comment', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function() {
   function loadComments(url) {
     showLoader(true);
     
-    fetch(`http://127.0.0.1:8000/get_comments?website_url=${encodeURIComponent(url)}`)
+    fetch(`http://127.0.0.1:8002/get_comments?website_url=${encodeURIComponent(url)}`)
       .then(response => response.json())
       .then(data => {
         showLoader(false);
@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function() {
   function loadCommentStats(url) {
     if (!url) return;
     
-    fetch(`http://127.0.0.1:8000/get_comment_stats?website_url=${encodeURIComponent(url)}`)
+    fetch(`http://127.0.0.1:8002/get_comment_stats?website_url=${encodeURIComponent(url)}`)
       .then(response => {
         if (!response.ok) {
           throw new Error(`Server responded with status ${response.status}`);
@@ -143,8 +143,7 @@ document.addEventListener('DOMContentLoaded', function() {
       commentTextElement.className = 'comment-text';
       commentTextElement.textContent = comment.comment_text;
       commentElement.appendChild(commentTextElement);
-      
-      if (comment.source_link) {
+      if (comment.source_link.length > 4) {
         const sourceElement = document.createElement('a');
         sourceElement.className = 'comment-source';
         sourceElement.href = comment.source_link;
@@ -161,14 +160,38 @@ document.addEventListener('DOMContentLoaded', function() {
     // Clear previous stats
     sentimentStats.innerHTML = '';
     
-    // Draw the meter
-    const centerX = sentimentMeter.width / 2;
-    const centerY = sentimentMeter.height / 2;
+    // // Draw the meter
+    // const centerX = sentimentMeter.width / 2;
+    // const centerY = sentimentMeter.height / 2;
+    // const radius = 45;
+    
+    // const scale = window.devicePixelRatio || 2;  
+    // const ctx = sentimentMeter.getContext('2d');
+    // ctx.scale(scale, scale);
+
+    // // Clear canvas
+    // ctx.clearRect(0, 0, sentimentMeter.width, sentimentMeter.height);
+    
+    // Adjust canvas resolution for high DPI screens
+    const scale = window.devicePixelRatio || 2;  
+    const width = sentimentMeter.clientWidth;    
+    const height = sentimentMeter.clientHeight;  
+
+    // Scale canvas size for high-resolution rendering
+    sentimentMeter.width = width * scale;
+    sentimentMeter.height = height * scale;
+    const ctx = sentimentMeter.getContext('2d');
+    ctx.scale(scale, scale);
+
+    const centerX = width / 2;
+    const centerY = height * 0.5; // Adjusted to prevent overlap
     const radius = 45;
-    
+
     // Clear canvas
-    ctx.clearRect(0, 0, sentimentMeter.width, sentimentMeter.height);
-    
+    ctx.clearRect(0, 0, width, height);
+
+
+
     // Draw background arc
     ctx.beginPath();
     ctx.arc(centerX, centerY, radius, Math.PI, 0, false);
@@ -235,7 +258,7 @@ document.addEventListener('DOMContentLoaded', function() {
     ctx.font = 'bold 16px Arial';
     ctx.fillStyle = '#333';
     ctx.textAlign = 'center';
-    ctx.fillText('Sentiment', centerX, centerY + 4);
+    ctx.fillText('Sentiment', centerX, centerY + 20);
     
     // Add stats to list
     if (positive > 0) {
