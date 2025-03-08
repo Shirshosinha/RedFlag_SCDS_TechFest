@@ -6,7 +6,7 @@ import openai
 import urllib.parse
 from transformers import pipeline
 from bs4 import BeautifulSoup
-
+from newspaper import Article
 # ==================== CONFIGURATIONS ====================
 
 
@@ -64,7 +64,7 @@ def smart_segment_paragraphs(text: str) -> list:
     return paragraphs
 
 
-def get_related_news_articles(query: str, excluded_domain: str, num_results=2) -> list:
+def get_related_news_articles(query: str, excluded_domain: str, num_results=3) -> list:
     """Fetch relevant news articles using Google Search, excluding sources from the same domain as the current page."""
     from googlesearch import search  # ✅ Google Search Library
 
@@ -180,7 +180,8 @@ def verify_misinformation_with_llm(claim: str, related_articles: list) -> dict:
     logging.debug(f"[DEBUG] Formatted Context for Llama 3.1 Analysis: {len(context)} chars")
 
     prompt = f"""
-    You are an AI misinformation fact-checker. Analyze the claim below using the provided web articles.
+    You are an AI misinformation fact-checker. Analyze the claim below using the provided web articles. Your output will be displayed direfctly on a browser.
+    Keep it VERY short and concise.
 
     **CLAIM**: "{claim}"
 
@@ -191,6 +192,9 @@ def verify_misinformation_with_llm(claim: str, related_articles: list) -> dict:
     - If the claim is **supported by sources**, classify it as: **✅ TRUE**
     - If the claim is **contradicted by sources**, classify it as: **❌ FALSE**
     - If no direct evidence is found, classify as: **🤷 NO EVIDENCE**
+
+    Put your classification at the very top of the answer, followed by a brief explanation. Follow this format:
+    'TRUE/FALSE/NO EVIDENCE: Very small explanation.'
     """
 
     headers = {
@@ -220,38 +224,26 @@ import time
 openai_call_cache = {}
 
 def fact_check_claim(paragraph: str, excluded_domain: str) -> dict:
-    """Paraphrase sentence, fetch Google search results (excluding current page's domain), and check for misinformation."""
-    cleaned_paragraph = preprocess_text(paragraph)
-    logging.debug(f"[DEBUG] Cleaned Paragraph: {cleaned_paragraph}")
-
-    if len(cleaned_paragraph) < 3:
-        return {"Fact-Check Result": "Unknown", "Explanation": "Sentence is too short for analysis"}
-
-    # ✅ Step 1: Generate better search query
-    try:
-        optimized_query = cleaned_paragraph
-        logging.debug(f"[DEBUG] Optimized Search Query: {optimized_query}")
-    except Exception as e:
-        logging.error(f"Error in paraphrasing: {e}")
-        return {"Fact-Check Result": "Error", "Explanation": "API Error during paraphrasing"}
-
-    # ✅ Step 2: Fetch relevant news articles from the web (EXCLUDING the current page's domain)
-    related_articles = get_related_news_articles(optimized_query, excluded_domain)
-    logging.debug(f"[DEBUG] Retrieved {len(related_articles)} Articles")
-
+    related_articles = get_related_news_articles(preprocess_text(paragraph), excluded_domain)
     if not related_articles:
-        logging.warning(f"[WARNING] No external articles found for query: {optimized_query}")
-        return {"Fact-Check Result": "NO EVIDENCE", "Explanation": "No independent sources found."}
-
-    # ✅ Step 3: Analyze with Groq Llama 3.1
-    try:
-        result = verify_misinformation_with_llm(cleaned_paragraph, related_articles)
-        logging.debug(f"[DEBUG] Misinformation Verdict: {result}")
-    except Exception as e:
-        logging.error(f"Error in misinformation analysis: {e}")
-        result = {"Fact-Check Result": "Error", "Explanation": "API Error during verification"}
-
-    return result
+        return {"classification": "NO EVIDENCE", "explanation": "No independent sources found.", "sources": []}
+    result = verify_misinformation_with_llm(paragraph, related_articles)
+    if "TRUE" in result["Misinformation Verdict"]:
+        return
+    if "FALSE" in result["Misinformation Verdict"]:
+        return {
+        "text": paragraph,
+        "classification": "FALSE",
+        "explanation": result["Misinformation Verdict"][9:],
+        "sources": [{"title": a["title"], "url": a["url"], "verdict": "External Source"} for a in related_articles]
+    }
+    else:
+        return {
+        "text": paragraph,
+        "classification": "NO EVIDENCE",
+        "explanation" : "No credible sources have confirmed this information.",
+        "sources" : []
+        }
 
 
 from urllib.parse import urlparse
@@ -265,43 +257,23 @@ def extract_domain(url: str) -> str:
         logging.error(f"[ERROR] Failed to extract domain from {url}: {e}")
         return ""
 
-
-
-# 6️⃣ **Process Full Text**
-def analyze_text(raw_text: str, current_page_url: str) -> dict:
-    """Analyze bias per sentence and misinformation per paragraph while avoiding self-referential results."""
-    
-    # ✅ Extract domain from the current page URL (from extension)
+def analyze_text(current_page_url: str) -> dict:
     excluded_domain = extract_domain(current_page_url)
-    logging.info(f"[INFO] Excluding sources from the current page domain: {excluded_domain}")
-
-    sentences = segment_sentences(raw_text)  # ✅ Split into sentences
-    paragraphs = smart_segment_paragraphs(raw_text)  # ✅ Split into paragraphs
-
-    bias_results = {}  # Store bias results per sentence
-    misinformation_results = {}  # Store misinformation results per paragraph
-
-    # ✅ Process Bias Detection (Per Sentence)
-    for sentence in sentences:
-        logging.info(f"Processing Bias Detection: {sentence}")
-
-        bias_result = detect_bias(sentence, threshold=BIAS_THRESHOLD)
-        if bias_result:  # ✅ Only store if bias is detected
-            bias_results[sentence] = bias_result[sentence]  
-
-    # ✅ Process Misinformation Detection (Per Paragraph)
-    for paragraph in paragraphs:
-        logging.info(f"Processing Misinformation Detection: {paragraph}")
-
-        misinformation_result = fact_check_claim(paragraph, excluded_domain)
-
-        # ✅ Ensure we store only the "Misinformation Verdict"
-        if "Misinformation Verdict" in misinformation_result:
-            misinformation_results[paragraph] = misinformation_result["Misinformation Verdict"]
-        else:
-            logging.warning(f"[WARNING] No misinformation verdict found for: {paragraph}")
-
+    article = Article(current_page_url)
+    article.download()
+    article.parse()
+    raw_text = article.title + "\n" + article.text
+    sentences = segment_sentences(raw_text)
+    paragraphs = raw_text.split("\n")
+    biased_sentences = [detect_bias(sent) for sent in sentences if detect_bias(sent)]
+    # misinformation_sentences = [fact_check_claim(para, excluded_domain) for para in paragraphs if len(para) > 3]
+    misinformation_sentences = []
+    for para in paragraphs:
+        if len(para) > 3:
+            claim = fact_check_claim(para, excluded_domain)
+            if claim:
+                misinformation_sentences.append(claim)
     return {
-        "biased_sentences": bias_results,  # ✅ Bias detection per sentence
-        "misinformation_sentences": misinformation_results  # ✅ Misinformation detection per paragraph
+        "biased_sentences": biased_sentences,
+        "misinformation_sentences": misinformation_sentences
     }

@@ -15,7 +15,6 @@ app = FastAPI()
 
 # Define request model for input text
 class TextRequest(BaseModel):
-    text: str
     url: str
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -32,7 +31,7 @@ app.add_middleware(
 @app.post("/analyze/")
 async def analyze_text_api(request: TextRequest):
 
-    result = analyze_text(request.text,request.url)
+    result = analyze_text(request.url)
     return result
 
 # Run the API when executing this file
