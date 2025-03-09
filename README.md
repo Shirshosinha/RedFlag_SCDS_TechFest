@@ -32,6 +32,9 @@ https://github.com/user-attachments/assets/d8580074-58d4-4cec-b6ce-c0111203f1df
   - **Neutral** – Mixed or uncertain reactions.
   
   - **Negative** – Majority suspect misinformation.
+
+    ![Screenshot 2025-03-10 030816](https://github.com/user-attachments/assets/d75a7687-be6f-492c-a97f-d54c03229482)
+
   
 ### 📰 Misinformation Detection
 - **Uses Google Search to get the Top 5 articles related to the context of the fake news** and  relays back the context and information gathered from articles into **Llama3.1**, which thereafter classifies the news into one of the following categories. 
@@ -39,6 +42,9 @@ https://github.com/user-attachments/assets/d8580074-58d4-4cec-b6ce-c0111203f1df
   -  **TRUE** (supported by sources)
   -  **FALSE** (contradicted by sources)
   -  **NO EVIDENCE** (no related news articles available)
+ 
+  ![74c648a4-2357-433f-b30d-ab1a1422f82e](https://github.com/user-attachments/assets/6a8afe65-d9ab-400b-a51f-746bf70286ac)
+
 
 ### 🔴 Bias Detection
 
@@ -46,7 +52,27 @@ https://github.com/user-attachments/assets/d8580074-58d4-4cec-b6ce-c0111203f1df
 - Detects bias in articles by analyzing sentiment.
 - Highlights potential bias in the **headline and body text** of a webpage.
 
+
+  
+![WhatsApp Image 2025-03-10 at 2 44 04 AM](https://github.com/user-attachments/assets/fd134751-065c-421a-a098-051a1e4a33ef)
+
+
+
 ---
+## 🏭 Industrial Value
+Misinformation and AI-generated content impact nearly every industry, from finance and politics to healthcare and cybersecurity. Red-Flag provides a practical, AI-powered solution that enhances decision-making, protects businesses, and promotes digital integrity.
+📌 Key Industry Applications
+🔹 🔍 Journalism & Media – Helps news organizations verify sources, detect bias, and maintain credibility in reporting.
+
+🔹 🏦 Finance & Corporate Security – Prevents deepfake scams, fraudulent emails, and misinformation-driven market manipulation.
+
+🔹 ⚖️ Law Enforcement & Cybersecurity – Assists in identifying AI-generated evidence, preventing identity theft, and combatting misinformation-driven fraud.
+
+🔹 🧑‍⚕️ Healthcare & Public Safety – Protects against fake medical news, misleading health claims, and AI-altered research papers.
+
+🔹 🗳️ Politics & Governance – Helps prevent election misinformation, deepfake political campaigns, and manipulation of public opinion.
+
+By providing real-time AI insights, Red-Flag offers a scalable, easy-to-use tool for industries facing misinformation challenges, ensuring trust, security, and informed decision-making.
 
 ## 📁 Project Structure
 
