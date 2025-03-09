@@ -33,7 +33,8 @@ https://github.com/user-attachments/assets/d8580074-58d4-4cec-b6ce-c0111203f1df
   
   - **Negative** – Majority suspect misinformation.
 
-    ![Screenshot 2025-03-10 030816](https://github.com/user-attachments/assets/d75a7687-be6f-492c-a97f-d54c03229482)
+  <img width="500" alt="Screenshot 2025-03-10 at 3 13 02 AM" src="https://github.com/user-attachments/assets/bae586df-94db-4dc1-8414-8001f2467922" />
+
 
   
 ### 📰 Misinformation Detection
@@ -42,8 +43,9 @@ https://github.com/user-attachments/assets/d8580074-58d4-4cec-b6ce-c0111203f1df
   -  **TRUE** (supported by sources)
   -  **FALSE** (contradicted by sources)
   -  **NO EVIDENCE** (no related news articles available)
- 
-  ![74c648a4-2357-433f-b30d-ab1a1422f82e](https://github.com/user-attachments/assets/6a8afe65-d9ab-400b-a51f-746bf70286ac)
+
+
+  <img width="500" alt="Screenshot 2025-03-10 at 3 13 02 AM" src="https://github.com/user-attachments/assets/6a8afe65-d9ab-400b-a51f-746bf70286ac" />
 
 
 ### 🔴 Bias Detection
@@ -53,8 +55,7 @@ https://github.com/user-attachments/assets/d8580074-58d4-4cec-b6ce-c0111203f1df
 - Highlights potential bias in the **headline and body text** of a webpage.
 
 
-  
-![WhatsApp Image 2025-03-10 at 2 44 04 AM](https://github.com/user-attachments/assets/fd134751-065c-421a-a098-051a1e4a33ef)
+  <img width="500" alt="Screenshot 2025-03-10 at 3 13 02 AM" src="https://github.com/user-attachments/assets/fd134751-065c-421a-a098-051a1e4a33ef" />
 
 
 
