@@ -2,7 +2,6 @@
 *.pth
 
 # Ignore video files
-*.mp4
 *.webm
 
 src/backend/textProcess/kaustav_rnv
@@ -12,4 +11,3 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
-.conda
