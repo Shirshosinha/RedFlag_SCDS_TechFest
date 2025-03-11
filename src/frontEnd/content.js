@@ -902,6 +902,17 @@ function analyzeVideos(videoElements) {
 
   videoElements.forEach((video, index) => {
     let currentRecorder = null;
+    video.addEventListener('loadeddata', () => {
+      // Remove the warning banner if it exists
+      const videoContainer = video.parentNode;
+      const warningBanner = videoContainer.querySelector('.deepfake-warning');
+      if (warningBanner) {
+        warningBanner.remove();
+      }
+      // Remove the flagged attribute and border
+      video.removeAttribute('data-deepfake-flagged');
+      video.style.border = '';
+    });
 
     function startRecording() {
       if (currentRecorder && currentRecorder.state === "recording") return;
