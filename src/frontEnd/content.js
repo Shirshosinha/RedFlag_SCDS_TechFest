@@ -96,6 +96,24 @@ function getXPathForElement(element) {
 
 /* ---------- Modified Text Analysis Part ---------- */
 
+// async function analyzeText(pageTextData) {
+//   try {
+//     const response = await fetch('http://127.0.0.1:8001/analyze/', {
+//       method: 'POST',
+//       headers: { 'Content-Type': 'application/json' },
+//       body: JSON.stringify({url: window.location.href})
+//     });
+//     if (!response.ok) {
+//       throw new Error('Text analysis API request failed');
+//     }
+//     return await response.json();
+//   } catch (error) {
+//     console.error('Error calling text analysis API:', error);
+//     return { biased_sentences: [], misinformation_sentences: [] };
+//   }
+// }
+
+
 async function analyzeText(pageTextData) {
   try {
     const response = await fetch('http://127.0.0.1:8001/analyze/', {
@@ -109,387 +127,18 @@ async function analyzeText(pageTextData) {
     return await response.json();
   } catch (error) {
     console.error('Error calling text analysis API:', error);
-    return { biased_sentences: [], misinformation_sentences: [] };
+    return { 
+      biased_sentences: [], 
+      misinformation_sentences: [],
+      threat_analysis: {
+        threat_score: 0,
+        threat_industries: "",
+        historical_risk: 0,
+        qualitative_analysis: ""
+      }
+    };
   }
 }
-
-
-
-// function highlightOpinionatedContent(analysisResults) {
-//   if (!analysisResults) return;
-  
-//   // Style insertion for tooltips
-//   if (!document.getElementById('extension-tooltip-styles')) {
-//     const styleElement = document.createElement('style');
-//     styleElement.id = 'extension-tooltip-styles';
-//     styleElement.textContent = `
-//       .tooltip-container {
-//         position: absolute;
-//         z-index: 10000;
-//         max-width: 320px;
-//         background-color: #fff;
-//         border-radius: 6px;
-//         box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-//         padding: 12px;
-//         font-size: 14px;
-//         color: #333;
-//         pointer-events: none;
-//         opacity: 0;
-//         transition: opacity 0.2s;
-//         visibility: hidden;
-//         line-height: 1.4;
-//         border-left: 4px solid transparent;
-//       }
-      
-//       .tooltip-bias {
-//         border-left-color: #FFA726;
-//       }
-      
-//       .tooltip-misinfo {
-//         border-left-color: #F44336;
-//       }
-      
-//       .tooltip-title {
-//         font-weight: bold;
-//         margin-bottom: 6px;
-//         display: flex;
-//         align-items: center;
-//         font-size: 15px;
-//       }
-      
-//       .tooltip-title-bias {
-//         color: #E65100;
-//       }
-      
-//       .tooltip-title-misinfo {
-//         color: #B71C1C;
-//       }
-      
-//       .tooltip-title-icon {
-//         margin-right: 6px;
-//       }
-      
-//       .tooltip-content {
-//         margin-bottom: 8px;
-//       }
-      
-//       .tooltip-score {
-//         display: inline-block;
-//         padding: 2px 6px;
-//         border-radius: 10px;
-//         font-size: 12px;
-//         font-weight: bold;
-//         background-color: #EEEEEE;
-//         margin-left: 8px;
-//       }
-      
-//       .tooltip-score-high {
-//         background-color: #FFCCBC;
-//         color: #D84315;
-//       }
-      
-//       .tooltip-score-medium {
-//         background-color: #FFE0B2;
-//         color: #EF6C00;
-//       }
-      
-//       .tooltip-score-low {
-//         background-color: #FFF9C4;
-//         color: #F57F17;
-//       }
-      
-//       .tooltip-fact-check-item {
-//         margin-top: 4px;
-//         padding: 8px;
-//         background-color: #F5F5F5;
-//         border-radius: 4px;
-//         font-size: 13px;
-//       }
-      
-//       .tooltip-fact-check-result {
-//         font-weight: bold;
-//         text-transform: uppercase;
-//         font-size: 11px;
-//         padding: 1px 5px;
-//         border-radius: 3px;
-//         display: inline-block;
-//         margin-top: 3px;
-//       }
-      
-//       .result-false {
-//         background-color: #FFCDD2;
-//         color: #C62828;
-//       }
-      
-//       .result-misleading {
-//         background-color: #FFE0B2;
-//         color: #E65100;
-//       }
-      
-//       .result-unproven {
-//         background-color: #E1F5FE;
-//         color: #0277BD;
-//       }
-      
-//       .tooltip-source-links {
-//         margin-top: 8px;
-//         font-size: 12px;
-//       }
-      
-//       .tooltip-source-link {
-//         display: block;
-//         color: #1565C0;
-//         text-decoration: underline;
-//         margin-bottom: 4px;
-//         word-break: break-all;
-//       }
-//     `;
-//     document.head.appendChild(styleElement);
-//   }
-  
-//   const allTextNodes = findTextNodes(document.body);
-  
-//   // Create a set to keep track of sentences already highlighted as misinformation
-//   const misinfoSentences = new Set();
-  
-//   // Process misinformation detection first (priority over bias)
-//   if (analysisResults.misinformation_sentences && Array.isArray(analysisResults.misinformation_sentences)) {
-//     analysisResults.misinformation_sentences.forEach(item => {
-//       // Get the text of the sentence from the first key in the object if it's an object
-//       // or directly from the item.text if it's in the new format
-//       const sentence = item.text || Object.keys(item)[0];
-      
-//       if (!sentence) return;
-//       misinfoSentences.add(sentence);
-      
-//       const tooltipId = `misinfo-tooltip-${Math.random().toString(36).substr(2, 9)}`;
-//       const matchingNodes = allTextNodes.filter(node => node.nodeValue.includes(sentence));
-      
-//       // Create tooltip element
-//       let tooltipElem = document.createElement('div');
-//       tooltipElem.id = tooltipId;
-//       tooltipElem.className = 'tooltip-container tooltip-misinfo';
-      
-//       // Process the explanation and classification
-//       let explanation = "";
-//       let classification = "";
-//       let sources = [];
-      
-//       if (item.text) {
-//         // New response format
-//         explanation = item.explanation || "";
-//         classification = item.classification || "";
-//         sources = item.sources || [];
-//       } else {
-//         // Old response format - not used but kept for backward compatibility
-//         const info = Object.values(item)[0];
-//         if (typeof info === 'object' && info["Fact-Check Matches"]) {
-//           explanation = info["Fact-Check Matches"][0]?.Explanation || "";
-//           classification = info["Fact-Check Matches"][0]?.["Fact-Check Result"] || "";
-//         }
-//       }
-      
-//       let tooltipContent = `
-//         <div class="tooltip-title tooltip-title-misinfo">
-//           <span class="tooltip-title-icon">❌</span> Misinformation Detected
-//         </div>
-//         <div class="tooltip-content">
-//           <strong>Classification: ${classification}</strong>
-//           <p>${explanation}</p>
-//         </div>
-//       `;
-      
-//       // Add sources if available
-//       if (sources && sources.length > 0) {
-//         tooltipContent += `<div class="tooltip-source-links"><strong>Sources:</strong>`;
-        
-//         sources.forEach(source => {
-//           tooltipContent += `
-//             <a class="tooltip-source-link" href="${source.url}" target="_blank" rel="noopener noreferrer">
-//               ${source.title || source.url}
-//             </a>
-//           `;
-//         });
-        
-//         tooltipContent += `</div>`;
-//       }
-      
-//       tooltipElem.innerHTML = tooltipContent;
-//       document.body.appendChild(tooltipElem);
-      
-//       highlightSentenceInNodes(sentence, matchingNodes, 'misinfo-highlight', tooltipId, tooltipElem);
-//     });
-//   }
-  
-//   // Process bias detection (only if not already highlighted as misinformation)
-//   if (analysisResults.biased_sentences && Array.isArray(analysisResults.biased_sentences)) {
-//     analysisResults.biased_sentences.forEach(item => {
-//       // Get the sentence and score
-//       const sentence = Object.keys(item)[0];
-//       const score = Object.values(item)[0];
-      
-//       if (!sentence || misinfoSentences.has(sentence)) return; // Skip if already highlighted as misinfo
-      
-//       const matchingNodes = allTextNodes.filter(node => node.nodeValue.includes(sentence));
-      
-//       const tooltipId = `bias-tooltip-${Math.random().toString(36).substr(2, 9)}`;
-      
-//       // Create tooltip element
-//       let tooltipElem = document.createElement('div');
-//       tooltipElem.id = tooltipId;
-//       tooltipElem.className = 'tooltip-container tooltip-bias';
-      
-//       // Format score for display
-//       const confidenceScore = score !== null ? Math.round(score * 100) : 0;
-//       let scoreClass = 'tooltip-score';
-//       if (confidenceScore >= 75) scoreClass += ' tooltip-score-high';
-//       else if (confidenceScore >= 50) scoreClass += ' tooltip-score-medium';
-//       else scoreClass += ' tooltip-score-low';
-      
-//       tooltipElem.innerHTML = `
-//         <div class="tooltip-title tooltip-title-bias">
-//           <span class="tooltip-title-icon">⚠️</span> Biased Content Detected
-//           <span class="${scoreClass}">${confidenceScore}%</span>
-//         </div>
-//         <div class="tooltip-content">
-//           This text shows signs of bias in its language or framing.
-//         </div>
-//       `;
-      
-//       document.body.appendChild(tooltipElem);
-      
-//       highlightSentenceInNodes(sentence, matchingNodes, 'opinion-highlight', tooltipId, tooltipElem, score);
-//     });
-//   }
-// }
-
-// // Helper function to highlight a sentence in multiple text nodes
-// function highlightSentenceInNodes(sentence, nodes, highlightClass, tooltipId, tooltipElement, score = null) {
-//   nodes.forEach(node => {
-//     const parent = node.parentNode;
-//     if (!parent) return; // Safety check
-    
-//     const text = node.nodeValue;
-    
-//     if (text.trim() === sentence.trim()) {
-//       // Replace the whole node with highlighted span
-//       const highlightedText = document.createElement('span');
-//       highlightedText.className = highlightClass;
-//       highlightedText.dataset.tooltipId = tooltipId;
-      
-//       if (score !== null) {
-//         highlightedText.dataset.opinionScore = score;
-//         const intensity = Math.floor(score * 100);
-//         highlightedText.style.backgroundColor = `rgba(255, ${255 - intensity}, ${150 - intensity}, 0.7)`;
-//       } else if (highlightClass === 'misinfo-highlight') {
-//         highlightedText.style.backgroundColor = 'rgba(255, 0, 0, 0.3)';
-//       }
-      
-//       highlightedText.textContent = text;
-      
-//       // Add hover listeners for tooltip
-//       addTooltipListeners(highlightedText, tooltipElement);
-      
-//       parent.replaceChild(highlightedText, node);
-//     } else {
-//       // Handle partial text matches
-//       const parts = text.split(new RegExp(`(${escapeRegExp(sentence)})`, 'g'));
-//       const fragment = document.createDocumentFragment();
-      
-//       parts.forEach(part => {
-//         if (part === sentence) {
-//           const highlightedText = document.createElement('span');
-//           highlightedText.className = highlightClass;
-//           highlightedText.dataset.tooltipId = tooltipId;
-          
-//           if (score !== null) {
-//             highlightedText.dataset.opinionScore = score;
-//             const intensity = Math.floor(score * 100);
-//             highlightedText.style.backgroundColor = `rgba(255, ${255 - intensity}, ${150 - intensity}, 0.7)`;
-//           } else if (highlightClass === 'misinfo-highlight') {
-//             highlightedText.style.backgroundColor = 'rgba(255, 0, 0, 0.3)';
-//           }
-          
-//           highlightedText.textContent = part;
-          
-//           // Add hover listeners for tooltip
-//           addTooltipListeners(highlightedText, tooltipElement);
-          
-//           fragment.appendChild(highlightedText);
-//         } else if (part !== '') {
-//           fragment.appendChild(document.createTextNode(part));
-//         }
-//       });
-      
-//       parent.replaceChild(fragment, node);
-//     }
-//   });
-// }
-
-// function addTooltipListeners(element, tooltipElement) {
-//   let hideTimeout;
-
-//   function showTooltip() {
-//     clearTimeout(hideTimeout);
-//     tooltipElement.style.visibility = 'visible';
-//     tooltipElement.style.opacity = '1';
-//     tooltipElement.style.pointerEvents = 'auto';
-//   }
-
-//   function hideTooltip() {
-//     hideTimeout = setTimeout(() => {
-//       tooltipElement.style.visibility = 'hidden';
-//       tooltipElement.style.opacity = '0';
-//       tooltipElement.style.pointerEvents = 'none';
-//     }, 300); // Small delay to allow movement
-//   }
-
-//   element.addEventListener('mouseenter', (e) => {
-//     // Position the tooltip
-//     const rect = element.getBoundingClientRect();
-//     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-//     const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
-    
-//     tooltipElement.style.top = `${rect.top + scrollTop - tooltipElement.offsetHeight - 10}px`;
-//     tooltipElement.style.left = `${rect.left + scrollLeft + (rect.width / 2) - (tooltipElement.offsetWidth / 2)}px`;
-    
-//     // Check if tooltip would appear above the viewport
-//     if (rect.top < tooltipElement.offsetHeight + 20) {
-//       tooltipElement.style.top = `${rect.bottom + scrollTop + 10}px`;
-//     }
-    
-//     // Prevent overflow on right side
-//     const rightEdge = rect.left + scrollLeft + (rect.width / 2) + (tooltipElement.offsetWidth / 2);
-//     if (rightEdge > window.innerWidth) {
-//       tooltipElement.style.left = `${window.innerWidth - tooltipElement.offsetWidth - 10}px`;
-//     }
-
-//     // Prevent overflow on left side
-//     const leftEdge = rect.left + scrollLeft + (rect.width / 2) - (tooltipElement.offsetWidth / 2);
-//     if (leftEdge < 10) {
-//       tooltipElement.style.left = '10px';
-//     }
-
-//     showTooltip();
-//   });
-
-//   element.addEventListener('mouseleave', hideTooltip);
-//   tooltipElement.addEventListener('mouseenter', showTooltip);
-//   tooltipElement.addEventListener('mouseleave', hideTooltip);
-
-//   // Make tooltip links clickable by stopping propagation
-//   const links = tooltipElement.querySelectorAll('a');
-//   links.forEach(link => {
-//     link.addEventListener('click', (e) => {
-//       e.stopPropagation();
-//       window.open(link.href, '_blank');
-//     });
-//     link.style.pointerEvents = 'auto';
-//   });
-// }
-
-
-
 
 
 
@@ -768,6 +417,26 @@ function highlightOpinionatedContent(analysisResults) {
       highlightSentenceInNodes(sentence, matchingNodes, 'opinion-highlight', tooltipId, tooltipElem, score);
     });
   }
+
+
+  chrome.storage.local.set({
+    'threatAnalysis': analysisResults.threat_analysis || {
+      threat_score: 0,
+      threat_industries: "",
+      historical_risk: 0,
+      qualitative_analysis: ""
+    }
+  });
+  
+  // Notify popup that new data is available
+  chrome.runtime.sendMessage({
+    action: 'updateThreatAnalysis',
+    data: analysisResults.threat_analysis
+  });
+
+
+
+
 }
 // Helper function to highlight a sentence in multiple text nodes
 function highlightSentenceInNodes(sentence, nodes, highlightClass, tooltipId, tooltipElement, score = null) {

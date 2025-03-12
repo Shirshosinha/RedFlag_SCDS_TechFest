@@ -115,6 +115,63 @@ def detect_bias(sentence: str, threshold: float = BIAS_THRESHOLD) -> dict:
 import requests
 import logging
 # ✅ Load sentence similarity model
+
+import json
+
+def analyze_threat_of_misinformation(misinformed_claims: list):
+    """Aggregates multiple misinformation claims into a single LLM request for holistic threat analysis with reasoning."""
+
+    if not misinformed_claims:
+        return {"error": "No misinformation claims provided for analysis."}
+
+    combined_claims = "\n".join([f"- {claim}" for claim in misinformed_claims])
+
+    prompt = f"""
+    You are an expert misinformation analyst. Below is a collection of misinformation claims detected in an article.
+
+    **Misinformation Claims Detected:**
+    {combined_claims}
+
+    **Analyze the overall impact of these claims and return the response in JSON format ONLY. Do NOT include explanations outside JSON.**
+
+    JSON Output MUST follow this structure:
+    {{
+        "threat_score": an integer between 1-10 (low = 1, high = 10),
+        "threat_industries":"One Industry that might be most affected by this misinformation",
+        "historical_risk": an integer (0 if no historical relevance, otherwise between 1-10),
+        "qualitative_analysis": "A very small brief explanation of the threat level and potential impact. Try to give one historical example of something like this happening in the past."
+    }}
+    """
+
+    headers = {
+        "Authorization": f"Bearer {GROQ_API_KEY}",
+        "Content-Type": "application/json"
+    }
+
+    payload = {
+        "model": "llama3-70b-8192",
+        "messages": [{"role": "user", "content": prompt}]
+    }
+
+    try:
+        response = requests.post(GROQ_ENDPOINT, headers=headers, json=payload)
+        response.raise_for_status()
+        result = response.json()
+
+        # ✅ Fix: Force JSON validation
+        try:
+            threat_data = json.loads(result["choices"][0]["message"]["content"].strip())
+        except json.JSONDecodeError:
+            logging.error("[ERROR] Groq LLM returned non-JSON format. Check LLM output.")
+            return {"error": "Threat analysis response is not in JSON format"}
+
+        return threat_data  # ✅ Now we return LLM-generated JSON directly
+
+    except requests.RequestException as e:
+        logging.error(f"Error querying Groq for threat analysis: {e}")
+        return {"error": "Unable to assess threat level due to API failure."}
+    
+
 def fetch_article_content(url: str) -> dict:
     """Scrape and extract main article title and first 500 words from a given URL."""
     try:
@@ -126,7 +183,6 @@ def fetch_article_content(url: str) -> dict:
 
         # ✅ Extract title of the article
         title = soup.title.string.strip() if soup.title else "No Title Available"
-
         # ✅ Extract main content using HTML tags
         article_text = ""
         for tag in ["p", "div", "article"]:
@@ -258,6 +314,8 @@ def extract_domain(url: str) -> str:
         return ""
 
 def analyze_text(current_page_url: str) -> dict:
+    """Processes text for bias detection, misinformation detection, and a single threat analysis with reasoning."""
+
     excluded_domain = extract_domain(current_page_url)
     article = Article(current_page_url)
     article.download()
@@ -266,14 +324,23 @@ def analyze_text(current_page_url: str) -> dict:
     sentences = segment_sentences(raw_text)
     paragraphs = raw_text.split("\n")
     biased_sentences = [detect_bias(sent) for sent in sentences if detect_bias(sent)]
-    # misinformation_sentences = [fact_check_claim(para, excluded_domain) for para in paragraphs if len(para) > 3]
     misinformation_sentences = []
+
     for para in paragraphs:
         if len(para) > 3:
             claim = fact_check_claim(para, excluded_domain)
             if claim:
                 misinformation_sentences.append(claim)
+
+    # ✅ Aggregate all misinformation statements for a single threat analysis
+    misinformation_texts = [claim["text"] for claim in misinformation_sentences if "text" in claim]
+
+    # ✅ If we have misinformation, analyze all of them together
+    threat_analysis = analyze_threat_of_misinformation(misinformation_texts) if misinformation_texts else None
+
+    # ✅ Assign the correct threat analysis to the final output
     return {
         "biased_sentences": biased_sentences,
-        "misinformation_sentences": misinformation_sentences
+        "misinformation_sentences": misinformation_sentences,
+        "threat_analysis": threat_analysis  # ✅ Now includes reasoning
     }
