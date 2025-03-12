@@ -657,7 +657,7 @@ function analyzeVideos(videoElements) {
           console.log(`Recorded 20-sec chunk for video ${index}:`, blob);
           const formData = new FormData();
           formData.append('file', blob, `recording_${index}_chunk_${Date.now()}.webm`);
-          formData.append('video_url', video.src);
+          formData.append('video_url', window.location.href);
           
           fetch('http://127.0.0.1:8000/video/api/video_predict', {
             method: 'POST',
@@ -802,10 +802,10 @@ function flagDeepfakeVideo(video, data) {
   // Create warning message and feedback buttons
   warningBanner.innerHTML = `
     <div class="deepfake-warning-content">
-      <div class="warning-message">⚠️ Potential deepfake detected! Is this video fake or real?</div>
+      <div class="warning-message">Potential deepfake detected! Are we right?</div>
       <div class="feedback-buttons">
-        <button type="button" class="feedback-btn real-btn">Real</button>
-        <button type="button" class="feedback-btn fake-btn">Fake</button>
+        <button type="button" class="feedback-btn real-btn">No</button>
+        <button type="button" class="feedback-btn fake-btn">Yes</button>
       </div>
       <div class="feedback-status" style="display: none;">Thank you for your feedback!</div>
     </div>
@@ -826,7 +826,7 @@ function flagDeepfakeVideo(video, data) {
         e.preventDefault();
         e.stopPropagation();
         console.log('Real button clicked');
-        submitFeedback(video.src, 'REAL');
+        submitFeedback(window.location.href, 'REAL');
         showFeedbackConfirmation();
         return false;
       };
@@ -837,7 +837,7 @@ function flagDeepfakeVideo(video, data) {
         e.preventDefault();
         e.stopPropagation();
         console.log('Fake button clicked');
-        submitFeedback(video.src, 'FAKE');
+        submitFeedback(window.location.href, 'FAKE');
         showFeedbackConfirmation();
         return false;
       };
