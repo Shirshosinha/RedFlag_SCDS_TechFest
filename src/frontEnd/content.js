@@ -83,6 +83,24 @@ function getXPathForElement(element) {
 
 /* ---------- Modified Text Analysis Part ---------- */
 
+// async function analyzeText(pageTextData) {
+//   try {
+//     const response = await fetch('http://127.0.0.1:8001/analyze/', {
+//       method: 'POST',
+//       headers: { 'Content-Type': 'application/json' },
+//       body: JSON.stringify({url: window.location.href})
+//     });
+//     if (!response.ok) {
+//       throw new Error('Text analysis API request failed');
+//     }
+//     return await response.json();
+//   } catch (error) {
+//     console.error('Error calling text analysis API:', error);
+//     return { biased_sentences: [], misinformation_sentences: [] };
+//   }
+// }
+
+
 async function analyzeText(pageTextData) {
   try {
     const response = await fetch('http://127.0.0.1:8001/analyze/', {
@@ -96,7 +114,16 @@ async function analyzeText(pageTextData) {
     return await response.json();
   } catch (error) {
     console.error('Error calling text analysis API:', error);
-    return { biased_sentences: [], misinformation_sentences: [] };
+    return { 
+      biased_sentences: [], 
+      misinformation_sentences: [],
+      threat_analysis: {
+        threat_score: 0,
+        threat_industries: "",
+        historical_risk: 0,
+        qualitative_analysis: ""
+      }
+    };
   }
 }
 
@@ -372,6 +399,26 @@ function highlightOpinionatedContent(analysisResults) {
       highlightSentenceInNodes(sentence, matchingNodes, 'opinion-highlight', tooltipId, tooltipElem, score);
     });
   }
+
+
+  chrome.storage.local.set({
+    'threatAnalysis': analysisResults.threat_analysis || {
+      threat_score: 0,
+      threat_industries: "",
+      historical_risk: 0,
+      qualitative_analysis: ""
+    }
+  });
+  
+  // Notify popup that new data is available
+  chrome.runtime.sendMessage({
+    action: 'updateThreatAnalysis',
+    data: analysisResults.threat_analysis
+  });
+
+
+
+
 }
 // Helper function to highlight a sentence in multiple text nodes
 function highlightSentenceInNodes(sentence, nodes, highlightClass, tooltipId, tooltipElement, score = null) {

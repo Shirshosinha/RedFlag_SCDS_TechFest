@@ -47,4 +47,56 @@ document.addEventListener('DOMContentLoaded', function() {
     contentCommunity.classList.add('active');
     contentHighlights.classList.remove('active');
   });
+  
+  // Load threat analysis data if available
+  loadThreatAnalysis();
+  
+  // Listen for updates from content script
+  chrome.runtime.onMessage.addListener(function(message) {
+    if (message.action === 'updateThreatAnalysis') {
+      updateThreatAnalysisUI(message.data);
+    }
+  });
 });
+
+// Function to load threat analysis data from storage
+function loadThreatAnalysis() {
+  chrome.storage.local.get('threatAnalysis', function(data) {
+    if (data.threatAnalysis) {
+      updateThreatAnalysisUI(data.threatAnalysis);
+    }
+  });
+}
+
+// Function to update the UI with threat analysis data
+function updateThreatAnalysisUI(threatData) {
+  if (!threatData) return;
+  
+  // Update threat score
+  const threatScore = document.getElementById('threat-score');
+  threatScore.textContent = `${threatData.threat_score}/10`;
+  
+  // Update threat score bar
+  const threatScoreFill = document.getElementById('threat-score-fill');
+  threatScoreFill.style.width = `${threatData.threat_score * 10}%`;
+  
+  // Update threat industries
+  const threatIndustries = document.getElementById('threat-industries');
+  threatIndustries.textContent = threatData.threat_industries || 'None detected';
+  
+  // Update historical risk dots
+  const historicalRisk = parseInt(threatData.historical_risk);
+  const riskDots = document.querySelectorAll('#historical-risk .risk-dot');
+  
+  riskDots.forEach((dot, index) => {
+    if (index < historicalRisk) {
+      dot.classList.add('active');
+    } else {
+      dot.classList.remove('active');
+    }
+  });
+  
+  // Update qualitative analysis
+  const qualitativeAnalysis = document.getElementById('qualitative-analysis');
+  qualitativeAnalysis.textContent = threatData.qualitative_analysis || 'No analysis available';
+}
