@@ -1,4 +1,3 @@
-
 let highlightsVisible = true;
 
 // Initialize when the page loads
@@ -51,18 +50,6 @@ async function analyzePageContent() {
     console.error('Error analyzing page content:', error);
   }
 }
-
-// // Extract all text content from the page
-// function extractPageText() {
-//   const textNodes = findTextNodes(document.body);
-//   return {
-//     fullText: document.body.innerText,
-//     textNodes: textNodes.map(node => ({
-//       text: node.nodeValue.trim(),
-//       xpath: getXPathForElement(node)
-//     })).filter(item => item.text !== '')
-//   };
-// }
 
 // Helper function to find all text nodes in the document
 function findTextNodes(node) {
@@ -139,11 +126,6 @@ async function analyzeText(pageTextData) {
     };
   }
 }
-
-
-
-
-
 
 function highlightOpinionatedContent(analysisResults) {
   if (!analysisResults) return;
@@ -563,6 +545,132 @@ function escapeRegExp(string) {
 
 
 // Continuously record 20-second chunks while any video is playing and flag if FAKE.
+// function analyzeVideos(videoElements) {
+//   if (videoElements.length === 0) {
+//     console.log('No video elements found on this page.');
+//     return { deepfakeVideos: [] };
+//   }
+
+//   videoElements.forEach((video, index) => {
+//     let currentRecorder = null;
+
+//     video.addEventListener('loadeddata', () => {
+//       // Remove the warning banner if it exists
+//       const videoContainer = video.parentNode;
+//       const warningBanner = videoContainer.querySelector('.deepfake-warning');
+//       if (warningBanner) {
+//         warningBanner.remove();
+//       }
+//       // Remove the flagged attribute and border
+//       video.removeAttribute('data-deepfake-flagged');
+//       video.style.border = '';
+//     });
+
+//     function startRecording() {
+//       if (currentRecorder && currentRecorder.state === "recording") return;
+//       if (video.paused) video.play();
+//       const stream = video.captureStream();
+//       currentRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+      
+//       currentRecorder.ondataavailable = event => {
+//         if (event.data && event.data.size > 0) {
+//           const blob = event.data;
+//           console.log(`Recorded 20-sec chunk for video ${index}:`, blob);
+//           const formData = new FormData();
+//           formData.append('file', blob, `recording_${index}_chunk_${Date.now()}.webm`);
+//           formData.append('video_url', video.src);
+          
+//           fetch('http://127.0.0.1:8000/video/api/video_predict', {
+//             method: 'POST',
+//             body: formData,
+//           })
+//             .then(response => response.json())
+//             .then(data => {
+//               console.log(`Backend response for video ${index} chunk:`, data);
+//               // If the backend response indicates the video is FAKE, flag it immediately.
+//               if (data.result && data.result === "FAKE") {
+//                 flagDeepfakeVideo(video, data);
+//               }
+//             })
+//             .catch(error => {
+//               console.error('Error sending video chunk:', error);
+//             });
+//         }
+//       };
+
+//       currentRecorder.onerror = error => {
+//         console.error('MediaRecorder error for video', index, error);
+//       };
+
+//       currentRecorder.start(3000);
+//       console.log(`Started recording 3-sec chunks for video ${index}`);
+//     }
+
+//     function stopRecording() {
+//       if (currentRecorder && currentRecorder.state !== "inactive") {
+//         currentRecorder.stop();
+//         console.log(`Stopped recording for video ${index}`);
+//       }
+//     }
+
+//     video.addEventListener('play', () => {
+//       console.log(`Play event detected for video ${index}`);
+//       startRecording();
+//     });
+//     video.addEventListener('pause', () => {
+//       console.log(`Pause event detected for video ${index}`);
+//       stopRecording();
+//     });
+//     video.addEventListener('ended', () => {
+//       console.log(`Ended event detected for video ${index}`);
+//       stopRecording();
+//     });
+    
+//     // If the video is already playing, start recording immediately.
+//     if (!video.paused) {
+//       startRecording();
+//     }
+//   });
+  
+//   return { deepfakeVideos: [] };
+// }
+
+// // Flag a video immediately when a fake response is received.
+// function flagDeepfakeVideo(video, data) {
+//   if (!video || video.hasAttribute('data-deepfake-flagged')) return;
+  
+//   video.setAttribute('data-deepfake-flagged', 'true');
+//   let videoContainer = video.parentNode;
+//   const videoComputedStyle = window.getComputedStyle(video);
+  
+//   if (videoComputedStyle.position === 'static' || 
+//       window.getComputedStyle(videoContainer).position === 'static') {
+//     const wrapper = document.createElement('div');
+//     wrapper.className = 'deepfake-video-container';
+//     wrapper.style.position = 'relative';
+//     wrapper.style.display = 'inline-block';
+//     wrapper.style.width = video.offsetWidth + 'px';
+//     wrapper.style.height = video.offsetHeight + 'px';
+//     video.parentNode.insertBefore(wrapper, video);
+//     wrapper.appendChild(video);
+//     videoContainer = wrapper;
+//   } else {
+//     videoContainer.style.position = 'relative';
+//   }
+  
+//   const warningBanner = document.createElement('div');
+//   warningBanner.className = 'deepfake-warning';
+//   let warningText = '⚠️ Potential deepfake video detected';
+//   // Optionally, include additional info such as confidence from data.accuracy
+//   warningBanner.innerHTML = warningText;
+//   video.style.border = '3px solid red';
+//   videoContainer.appendChild(warningBanner);
+  
+//   video.addEventListener('play', () => {
+//     warningBanner.style.display = 'block';
+//   });
+// }
+
 function analyzeVideos(videoElements) {
   if (videoElements.length === 0) {
     console.log('No video elements found on this page.');
@@ -571,6 +679,18 @@ function analyzeVideos(videoElements) {
 
   videoElements.forEach((video, index) => {
     let currentRecorder = null;
+
+    video.addEventListener('loadeddata', () => {
+      // Remove the warning banner if it exists
+      const videoContainer = video.parentNode;
+      const warningBanner = videoContainer.querySelector('.deepfake-warning');
+      if (warningBanner) {
+        warningBanner.remove();
+      }
+      // Remove the flagged attribute and border
+      video.removeAttribute('data-deepfake-flagged');
+      video.style.border = '';
+    });
 
     function startRecording() {
       if (currentRecorder && currentRecorder.state === "recording") return;
@@ -584,6 +704,7 @@ function analyzeVideos(videoElements) {
           console.log(`Recorded 20-sec chunk for video ${index}:`, blob);
           const formData = new FormData();
           formData.append('file', blob, `recording_${index}_chunk_${Date.now()}.webm`);
+          formData.append('video_url', window.location.href);
           
           fetch('http://127.0.0.1:8000/video/api/video_predict', {
             method: 'POST',
@@ -607,8 +728,8 @@ function analyzeVideos(videoElements) {
         console.error('MediaRecorder error for video', index, error);
       };
 
-      currentRecorder.start(10000);
-      console.log(`Started recording 10-sec chunks for video ${index}`);
+      currentRecorder.start(3000);
+      console.log(`Started recording 3-sec chunks for video ${index}`);
     }
 
     function stopRecording() {
@@ -663,19 +784,143 @@ function flagDeepfakeVideo(video, data) {
     videoContainer.style.position = 'relative';
   }
   
+  // Add CSS to head once
+  if (!document.getElementById('deepfake-warning-styles')) {
+    const style = document.createElement('style');
+    style.id = 'deepfake-warning-styles';
+    style.textContent = `
+      .deepfake-warning {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        background-color: rgba(255, 0, 0, 0.8);
+        color: white;
+        padding: 8px;
+        font-size: 14px;
+        text-align: center;
+        z-index: 9999;
+        pointer-events: auto;
+      }
+      .deepfake-warning-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+      }
+      .warning-message {
+        font-weight: bold;
+      }
+      .feedback-buttons {
+        display: flex;
+        gap: 10px;
+      }
+      .feedback-btn {
+        padding: 5px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background-color 0.2s;
+      }
+      .real-btn {
+        background-color: #4CAF50;
+        color: white;
+      }
+      .fake-btn {
+        background-color: #f44336;
+        color: white;
+      }
+      .feedback-btn:hover {
+        opacity: 0.9;
+      }
+      .feedback-status {
+        font-size: 13px;
+        font-style: italic;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+  
   const warningBanner = document.createElement('div');
   warningBanner.className = 'deepfake-warning';
-  let warningText = '⚠️ Potential deepfake video detected';
-  // Optionally, include additional info such as confidence from data.accuracy
-  warningBanner.innerHTML = warningText;
+  warningBanner.style.pointerEvents = 'auto'; // Ensure clicks are registered
+  
+  // Create warning message and feedback buttons
+  warningBanner.innerHTML = `
+    <div class="deepfake-warning-content">
+      <div class="warning-message">Potential deepfake detected! Are we right?</div>
+      <div class="feedback-buttons">
+        <button type="button" class="feedback-btn real-btn">No</button>
+        <button type="button" class="feedback-btn fake-btn">Yes</button>
+      </div>
+      <div class="feedback-status" style="display: none;">Thank you for your feedback!</div>
+    </div>
+  `;
+  
   video.style.border = '3px solid red';
   videoContainer.appendChild(warningBanner);
+  
+  // Explicitly add click event listeners after the banner is in the DOM
+  setTimeout(() => {
+    const realBtn = warningBanner.querySelector('.real-btn');
+    const fakeBtn = warningBanner.querySelector('.fake-btn');
+    const feedbackStatus = warningBanner.querySelector('.feedback-status');
+    const feedbackButtons = warningBanner.querySelector('.feedback-buttons');
+    
+    if (realBtn) {
+      realBtn.onclick = function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('Real button clicked');
+        submitFeedback(window.location.href, 'REAL');
+        showFeedbackConfirmation();
+        return false;
+      };
+    }
+    
+    if (fakeBtn) {
+      fakeBtn.onclick = function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('Fake button clicked');
+        submitFeedback(window.location.href, 'FAKE');
+        showFeedbackConfirmation();
+        return false;
+      };
+    }
+    
+    function showFeedbackConfirmation() {
+      feedbackButtons.style.display = 'none';
+      feedbackStatus.style.display = 'block';
+    }
+  }, 100);
   
   video.addEventListener('play', () => {
     warningBanner.style.display = 'block';
   });
 }
 
+// Function to submit user feedback
+function submitFeedback(videoUrl, feedback) {
+  console.log(`Submitting feedback: ${feedback} for ${videoUrl}`);
+  
+  const formData = new FormData();
+  formData.append('video_url', videoUrl);
+  formData.append('feedback', feedback);
+  
+  fetch('http://127.0.0.1:8000/video/api/feedback', {
+    method: 'POST',
+    body: formData,
+  })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Feedback response:', data);
+    })
+    .catch(error => {
+      console.error('Error submitting feedback:', error);
+    });
+}
 // Modified toggle function to handle visibility of both highlights and tooltips
 function toggleHighlightVisibility(visible) {
   const opinionHighlights = document.querySelectorAll('.opinion-highlight');
